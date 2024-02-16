@@ -1,0 +1,129 @@
+library(RNetCDF)
+library(raster)
+
+
+# Largest 5-day cumulative precipitation -- historical data (1985 - 2014)
+nc0 <- open.nc('C:/Users/silag/Downloads/returnlevel5yr-rx5day-period-mean_cmip6_period_all-regridded-bct-historical-climatology_median_1985-2014.nc')
+print.nc(nc0)
+grid0 = var.get.nc(nc0, "returnlevel5yr-rx5day-period-mean", start=c(NA, NA, 1), count=c(NA, NA, 1))
+sim0 <- raster(grid0, xmn=-90, xmx=90, ymn=0, ymx=360, crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+sim0 = rotate(flip(t(sim0), 2))
+plot(sim0, ylim=c(-100,100), axes=FALSE, main = "What are the 5-day cumulative precipitation records?", cex.main=2)
+mtext("Data from 1985-2014", side=1, line=2, at=9, cex=1.65)
+mtext("Units in mm of precipitation", side=1, line=3.5, at=9, cex=1.65)
+
+
+# Largest 5-day cumulative precipitation -- future (5-year change in annual exceedance probability, 50th percentile, SSP2-4.5 model)
+nc1 <- open.nc('C:/Users/silag/Downloads/faep5yr-rx5day-period-mean_cmip6_period_all-regridded-bct-ssp245-climatology_median_2010-2039.nc')
+nc2 <- open.nc('C:/Users/silag/Downloads/faep5yr-rx5day-period-mean_cmip6_period_all-regridded-bct-ssp245-climatology_median_2035-2064.nc')
+nc3 <- open.nc('C:/Users/silag/Downloads/faep5yr-rx5day-period-mean_cmip6_period_all-regridded-bct-ssp245-climatology_median_2060-2089.nc')
+nc4 <- open.nc('C:/Users/silag/Downloads/faep5yr-rx5day-period-mean_cmip6_period_all-regridded-bct-ssp245-climatology_median_2070-2099.nc')
+
+ncs <- list(nc1, nc2, nc3, nc4)
+periods <- list("2010-2039", "2035-2064", "2060-2089", "2070-2099")
+
+for(i in 1:4){
+  grid = var.get.nc(ncs[[i]], "faep5yr-rx5day-period-mean", start=c(NA, NA, 1), count=c(NA, NA, 1))
+  sim <- raster(grid, xmn=-90, xmx=90, ymn=0, ymx=360, crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+  sim = rotate(flip(t(sim), 2))
+  
+  years = periods[i]
+  plot(sim, ylim=c(-100,100), zlim=c(0, 0.75), axes=FALSE, main="How often can we expect 5-day precipitation records to be broken?", cex.main=2)
+  mtext(years, line=0.01, cex=1.5)
+  mtext("5-year change in annual exceedance probability, w.r.t. historical baseline", side=1, line=2, at=9, cex=1.65)
+  mtext("Units in occurrences/year", side=1, line=3.5, at=9, cex=1.65)
+}
+
+
+periods <- c("2010-2039", "2035-2069", "2060-2089", "2070-2099")
+# USA plot across scenarios
+usa0 <- 99.8
+usa1 <- c(0.24,	0.26,	0.26,	0.25)
+usa2 <- c(0.23,	0.29,	0.34,	0.34)
+usa3 <- c(0.24,	0.3,	0.39,	0.43)
+
+plot(usa1, xlab = "Time Period", ylab = "5-year change in AEP", xaxt='n', col="red", pch=16, lwd=2, ylim=c(0.2, 0.5), main="USA Predictions Across 3 Scenarios", cex.main=2, cex.lab=1.5)
+lines(usa1, col="red", lwd=2)
+points(usa2, col="green", lwd=2, pch=16)
+lines(usa2, col="green", lwd=2)
+points(usa3, col="blue", lwd=2, pch=16)
+lines(usa3, col="blue", lwd=2)
+axis(1, at=c(1,2,3,4), labels = periods)
+legend("topleft", inset=0.05, legend=c("SSP1-1.9", "SSP2-4.5", "SSP5-8.5"), col=c("red", "green", "blue"), lty=1, lwd=2, cex=1.2)
+mtext("Baseline = 99.8 mm", cex=1.2)
+
+# Alaska plot across scenarios
+ak0 <- 76.66
+ak1 <- c(0.25, 0.31, 0.3, 0.3)
+ak2 <- c(0.25, 0.34, 0.43, 0.45)
+ak3 <- c(0.27, 0.4, 0.6, 0.72)
+
+plot(ak1, xlab = "Time Period", ylab = "5-year change in AEP", xaxt='n', col="red", pch=16, lwd=2, ylim=c(0.2, 0.75), main="Alaska Predictions Across 3 Scenarios", cex.main=2, cex.lab=1.5, cex.axis=1.5)
+lines(ak1, col="red", lwd=2)
+points(ak2, col="green", lwd=2, pch=16)
+lines(ak2, col="green", lwd=2)
+points(ak3, col="blue", lwd=2, pch=16)
+lines(ak3, col="blue", lwd=2)
+axis(1, at=c(1,2,3,4), labels = periods, cex.axis=1.5)
+legend("topleft", inset=0.05, legend=c("SSP1-1.9", "SSP2-4.5", "SSP5-8.5"), col=c("red", "green", "blue"), lty=1, lwd=2, cex=1.2)
+mtext("Baseline = 76.66 mm", cex=1.2)
+
+# California plot across scenarios
+ca0 <- 159.94
+ca1 <- c(0.23, 0.23, 0.23, 0.22)
+ca2 <- c(0.22, 0.23, 0.25, 0.25)
+ca3 <- c(0.23, 0.24, 0.27, 0.28)
+
+plot(ca1, xlab = "Time Period", ylab = "5-year change in AEP", xaxt='n', col="red", pch=16, lwd=2, ylim=c(0.2, 0.35), main="California Predictions Across 3 Scenarios", cex.main=2, cex.lab=1.5, cex.axis=1.5)
+lines(ca1, col="red", lwd=2)
+points(ca2, col="green", lwd=2, pch=16)
+lines(ca2, col="green", lwd=2)
+points(ca3, col="blue", lwd=2, pch=16)
+lines(ca3, col="blue", lwd=2)
+axis(1, at=c(1,2,3,4), labels = periods, cex.axis=1.5)
+legend("topleft", inset=0.05, legend=c("SSP1-1.9", "SSP2-4.5", "SSP5-8.5"), col=c("red", "green", "blue"), lty=1, lwd=2, cex=1.2)
+mtext("Baseline = 159.94 mm", cex=1.2)
+
+# Delaware plot across scenarios
+de0 <- 124.25
+de1 <- c(0.2, 0.26, 0.25, 0.24)
+de2 <- c(0.24, 0.26, 0.31, 0.3)
+de3 <- c(0.24, 0.31, 0.41, 0.44)
+
+plot(de1, xlab = "Time Period", ylab = "5-year change in AEP", xaxt='n', col="red", pch=16, lwd=2, ylim=c(0.2, 0.5), main="Delaware Predictions Across 3 Scenarios", cex.main=2, cex.lab=1.5)
+lines(de1, col="red", lwd=2)
+points(de2, col="green", lwd=2, pch=16)
+lines(de2, col="green", lwd=2)
+points(de3, col="blue", lwd=2, pch=16)
+lines(de3, col="blue", lwd=2)
+axis(1, at=c(1,2,3,4), labels = periods)
+legend("topleft", inset=0.05, legend=c("SSP1-1.9", "SSP2-4.5", "SSP5-8.5"), col=c("red", "green", "blue"), lty=1, lwd=2, cex=1.2)
+mtext("Baseline = 124.25 mm", cex=1.2)
+
+
+# Watershed basins plots
+historical <- c(147.15, 56.04, 192.67, 220.87, 56.51, 140.6)
+barplot(historical, names.arg=c("Basin 440", "Basin 161", "Basin 370", "Basin 413", "Basin 289", "Basin 366"), col=c("red", "blue", "green", "pink", "orange", "grey"), xlab="Watershed Basin", ylab="Precipitation (mm)", main="5-Day Cumulative Precipitaion: Historical Baselines", cex.main=2, cex.lab=1.5, cex.axis=1.5)
+
+congo <- c(0.24, 0.29, 0.32, 0.34)
+russia <- c(0.29, 0.38, 0.46, 0.48)
+indo <- c(0.23, 0.27, 0.32, 0.33)
+mad <- c(0.21, 0.24, 0.25, 0.26)
+ak <- c(0.26, 0.35, 0.43, 0.45)
+aus <- c(0.21, 0.22, 0.24, 0.24)
+
+plot(congo, xlab = "Time Period", ylab = "5-year change in AEP", xaxt='n', col="red", pch=16, lwd=2, ylim=c(0.2, 0.7), main="Watershed Basin Predictions", cex.main=2, cex.lab=1.5, cex.axis=1.5)
+lines(congo, col="red", lwd=2)
+points(russia, col="green", lwd=2, pch=16)
+lines(russia, col="green", lwd=2)
+points(indo, col="blue", lwd=2, pch=16)
+lines(indo, col="blue", lwd=2)
+points(mad, col="pink", lwd=2, pch=16)
+lines(mad, col="pink", lwd=2)
+points(ak, col="orange", lwd=2, pch=16)
+lines(ak, col="orange", lwd=2)
+points(aus, col="grey", lwd=2, pch=16)
+lines(aus, col="grey", lwd=2)
+axis(1, at=c(1,2,3,4), labels = periods, cex.axis=1.5)
+legend("topleft", inset=0.05, legend=c("Basin 440", "Basin 161", "Basin 370", "Basin 413", "Basin 289", "Basin 366"), col=c("red", "blue", "green" , "pink", "orange", "grey"), lty=1, lwd=2, cex=1.2)
+mtext("SSP2-4.5 used for all predictions", cex=1.2)

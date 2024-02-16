@@ -1,0 +1,158 @@
+---
+output:
+  pdf_document: default
+---
+
+# Work with Data in R
+
+Department of Political Science 
+
+Washington University in St. Louis 
+
+<!--
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(root.dir = '.')
+```
+-->
+
+# Today's Goals
+
+The primary goals for this lab will be two fold. First, to become comfortable using basic R data types and commands. Second, to learn to load and inspect data.
+
+# Introduction to R
+
+In this section you will be becoming more familiar with some of the basic data types in R as well as with some of R's built in functions.  If you have any questions remember to ask!
+
+## Object and Variable:
+
+* Assign the value of `10` to `x`: (Hint: you can use `<-` or `=` to assign a variable values)
+```{r}
+## WRITE ANSWER HERE
+x <- 10
+```
+
+* Subtract 5 from `x` and then print it out (Hint: you can use the `print()` command)
+```{r}
+## WRITE ANSWER HERE
+x-5
+```
+
+* Set `x` to the third power and print it out (Hint: you can do this with `^` and without the `print()` command)
+```{r}
+## WRITE ANSWER HERE
+x^3
+```
+
+* Without running the next line, what do you think the result will be? Run the command to see if you were correct. (Hint: R uses P.E.M.D.A.S. when executing calculations)
+```{r,eval=FALSE}
+2*(300-x)+5
+2*(x-100)+2*(x -4)^(1/2)
+```
+
+```{r}
+## WRITE ANSWER HERE
+585
+```
+\vspace{10pt}
+
+## Vectors:
+
+In this next section, we'll be using a common R data type known as a vector. A vector is a list of items of the same type.  This can be a list of numbers, names, or even dates, but are all the same data type. When we look at columns of a data frame, we are often looking at a vector in R!
+
+* Below is how you declare a vector. Notice how we use `c( )` to denote what items will be in out vector.
+```{r}
+test_vector <- c(10,9,8,7,6,5,4,3,2,1)
+test_vector
+```
+
+* We can access items of a vector using `[ ]` after the vector name. The number inside the brackets is the index of the item in the vector. Vector's indices begin at 1.
+```{r}
+test_vector[2]
+```
+
+* Make a vector `y` with all the even numbers between 2 and 20.
+```{r}
+## WRITE ANSWER HERE
+2:20
+seq(2, 20, by = 2)
+```
+
+* What is the third item in the vector?
+```{r}
+## WRITE ANSWER HERE
+third = seq(2, 20, by = 2)[3]
+third
+```
+
+* At which index is 14?
+```{r}
+## WRITE ANSWER HERE
+ind = match(14, seq(2, 20, by = 2))
+ind
+```
+\vspace{10pt}
+
+
+* Using the vector `z` below, find its **length** (the number of items in it), **maximum value**, **minimum value**, **mean value**, and **median value**. (Hint: R has a number of pre-built functions to find this information. Try using functions such as `min()` to find the answers)
+\vspace{10pt}
+```{r}
+
+z <- sample(100, 15, replace=TRUE)
+print(z)
+length(z)
+max(z)
+min(z)
+mean(z)
+median(z)
+```
+
+```{r}
+## WRITE ANSWER HERE
+```
+\vspace{10pt}
+
+
+# Load and Inspect Data
+
+In this section, we'll learn how to load and inspect data from a source file. The example data is an experiement from Gerber et al (2008). [^1]
+
+## Experiment Overview:
+- August 2006 Primary Statewide Election in Michigan.
+- Send postcards with randomly assigned message.
+    1. No message
+    2. Civic Duty Message
+    3. You Are Being Studied Message 
+    4. Neighborhood Social Pressure Message
+- Measured voter turnout for each group.
+
+
+[^1]: Source: Gerber, Alan S., Donald P. Green, and Christopher W. Larimer. "Social pressure and voter turnout: Evidence from a large-scale field experiment." American political Science review 102.1 (2008): 33-48.
+
+
+## Load Data
+Before loading the data, it is always important to be aware of the working directory!
+
+```{r}
+# you should put the whole path below, e.g., read.csv('/Users/yourname/Documents/social.csv')
+social <- read.csv("C:/Users/silag/OneDrive/Desktop/Data Science/social.csv") 
+```
+
+## Inspect Data
+* What's the class of the object `social`? (Hint: You can use the `class()` command)
+```{r}
+## WRITE ANSWER HERE
+class(social)
+```
+
+* We can use `head()` to get an idea of how the data is structured.
+```{r}
+## WRITE ANSWER HERE
+head(social)
+```
+
+To reference a specific column in our data frame we can use a `$` and the column name. For example `social$message` returns a vector containing the various messages each person received.
+```{r}
+## TRY IT HERE
+social$message
+```
